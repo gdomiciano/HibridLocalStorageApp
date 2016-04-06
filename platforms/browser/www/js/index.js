@@ -22,15 +22,35 @@ var communicator = (function(){
     var $messageHtml = $('#message');
     var $messages = $('#messages');
 
+    var addMessage = function(msg){
+        savedMessages.push(msg);
+        $messageHtml.val('');
+        window.localStorage.setItem('messages', JSON.stringify(savedMessages));
+        renderMessages();
+    }
+
     var onSendMessage = function(){
 
         var message = {text: $messageHtml.val()}
-        savedMessages.push(message);
-        $messageHtml.val('');
-        window.localStorage.setItem('messages',JSON.stringify(savedMessages));
-        renderMessages();
-
+        addMessage(message);
         console.log('Envie Mensagem');
+    }
+
+    var onGetPhoto = function(){
+        console.log('tap')
+        var options = {
+            sourceType : Camera.PictureSourceType.PHOTOLIBRARY,
+            destinationType : Camera.DestinationType.DATA_URL
+        }
+        navigator.camera.getPicture(onGetPhotoSuccess, onGetPhotoError, options);
+    }
+
+    var onGetPhotoSuccess = function(imageData){
+        var message = {'value':imageData, 'type':'image64'}
+        addMessage(message);
+    }
+    var onGetPhotoError = function(e){
+        console.log('error: ', e);
     }
     var onDeleteMessages = function(){
         window.localStorage.clear();
@@ -45,8 +65,14 @@ var communicator = (function(){
         }
         $messages.html('');
         savedMessages.forEach(function(msg){
-            $messages.append('<li>' + msg.text + '</li>');
-            $messages.listview("refresh");        
+            if(msg.type === 'image64'){
+                var src = 'data:image/jpeg;base64,' + msg.value
+                $messages.append('<li><img src="' + src + '"/></li>');
+           }else{
+
+                $messages.append('<li>' + msg.text + '</li>');
+           }
+                $messages.listview("refresh");        
         })
     }
 
@@ -54,6 +80,7 @@ var communicator = (function(){
         init: function(){
             $('#send-message').on('tap', onSendMessage);
             $('#delete-messages').on('tap', onDeleteMessages);
+            $('#get-photo').on('taphold', onGetPhoto);
         }
     }
 
@@ -63,4 +90,14 @@ var communicator = (function(){
     $.mobile.defaultPageTransition = "none";
     $.mobile.defaultDialogTransition = "none";
     communicator.init();
+    console.log(navigator.camera);
 });
+
+// var onTakePhoto = function(){
+//     var options = {
+//         sourceType : Camera.PictureSourceType.CAMERA,
+//         destinationType : Camera.DestinationType.DATA_URL
+//     }
+
+//     navigator.camera.getPicture(oneGetPhotoSuccess, onGetPhotoError, options);
+// }
