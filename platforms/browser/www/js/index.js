@@ -1,42 +1,63 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */ 
-var communicator = (function(){
+var communicator = (function () {
 
     var savedMessages = [];
-    var $messageHtml = $('#message');
+    var $messageField = $('#message');
     var $messages = $('#messages');
 
-    var addMessage = function(msg){
-        savedMessages.push(msg);
-        $messageHtml.val('');
-        window.localStorage.setItem('messages', JSON.stringify(savedMessages));
-        renderMessages();
+    function getMessageTextHTML(msg) {
+        return '<li>' + msg.value + '</li>';
     }
 
-    var onSendMessage = function(){
+    function getMessageImgHTML(msg) {
+        var src = 'data:image/jpeg;base64,' + msg.value;
+        return '<li><img src="' + src + '"/></li>';
+    }
 
-        var message = {text: $messageHtml.val()}
+    function appendMessage(msg) {
+        if (msg.type === 'image64') {
+            $messages.append(getMessageImgHTML(msg));
+        }
+        if (msg.type === 'text') {
+            $messages.append(getMessageTextHTML(msg));
+        }
+        $messages.listview("refresh"); 
+    }
+
+    // deprecated
+    function renderMessages(refresh) {
+        if(savedMessages === []) {
+            $messages.html('<li>no messages</li>');
+            return;
+        }
+        $messages.html('');
+        savedMessages.forEach(function (msg) {
+            appendMessage(msg);       
+        });
+    }
+
+    function addMessage(msg) {
+        if (!savedMessages.length) {
+            // clear "no messages" message
+            $messages.html(''); 
+        }
+        savedMessages.push(msg);
+        $messageField.val('');
+        window.localStorage.setItem('messages', JSON.stringify(savedMessages));
+
+        // renderMessages();
+        appendMessage(msg);
+    }
+
+    function onSendMessage() {
+        var message = {
+            type: 'text',
+            value: $messageField.val()
+        }
         addMessage(message);
         console.log('Envie Mensagem');
     }
 
-    var onGetPhoto = function(){
+    function onGetPhoto() {
         console.log('tap')
         var options = {
             sourceType : Camera.PictureSourceType.PHOTOLIBRARY,
@@ -45,55 +66,42 @@ var communicator = (function(){
         navigator.camera.getPicture(onGetPhotoSuccess, onGetPhotoError, options);
     }
 
-    var onGetPhotoSuccess = function(imageData){
+    function onGetPhotoSuccess(imageData) {
         var message = {'value':imageData, 'type':'image64'}
         addMessage(message);
     }
-    var onGetPhotoError = function(e){
-        console.log('error: ', e);
+
+    function onGetPhotoError(error) {
+        console.log('error: ', error);
     }
-    var onDeleteMessages = function(){
+
+    function onDeleteMessages() {
         window.localStorage.clear();
         savedMessages = [];
-        renderMessages();
-        console.log('remove Mensagem');
-    }
-    var renderMessages = function(refresh){
-        if(savedMessages === []){
-            $messages.html('<li>no messages</li>');
-            return;
-        }
-        $messages.html('');
-        savedMessages.forEach(function(msg){
-            if(msg.type === 'image64'){
-                var src = 'data:image/jpeg;base64,' + msg.value
-                $messages.append('<li><img src="' + src + '"/></li>');
-           }else{
-
-                $messages.append('<li>' + msg.text + '</li>');
-           }
-                $messages.listview("refresh");        
-        })
+        $messages.html('<li>no messages</li>'); 
+        $messages.listview("refresh");
     }
 
-    return{
-        init: function(){
-            $('#send-message').on('tap', onSendMessage);
-            $('#delete-messages').on('tap', onDeleteMessages);
-            $('#get-photo').on('taphold', onGetPhoto);
-        }
+    function initListeners() {
+        $('#send-message').on('tap', onSendMessage);
+        $('#delete-messages').on('tap', onDeleteMessages);
+        $('#get-photo').on('taphold', onGetPhoto);
+    }
+
+    return {
+        init: initListeners
     }
 
 })();
 
- $(document).on("mobileinit", function() {
+ $(document).on("mobileinit", function () {
     $.mobile.defaultPageTransition = "none";
     $.mobile.defaultDialogTransition = "none";
+
     communicator.init();
-    console.log(navigator.camera);
 });
 
-// var onTakePhoto = function(){
+// function onTakePhoto() {
 //     var options = {
 //         sourceType : Camera.PictureSourceType.CAMERA,
 //         destinationType : Camera.DestinationType.DATA_URL
