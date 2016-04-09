@@ -28,7 +28,7 @@
             * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
                 * Enable inline JS: add 'unsafe-inline' to default-src
         -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data: gap: https://ssl.gstatic.com http://www.mocky.io ws://127.0.0.1:1337/ 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
@@ -42,29 +42,18 @@
             <div data-role="header">
                 <h1>Home</h1>
             </div>
-            <ul data-role="listview">
-                <li>
-                    <a href="#page1">
-                        <div class="square">
-                            <img src="img/phone.png" alt="" id="box-phone-d1">
-                        </div>
-                        Olavo Egídio
-                    </a>
-                </li>
-                <li><a href="#page2">Alberto Badra</a></li>
-                <li><a href="#page3">Martins Fontes</a></li>
-            </ul>
+            <ul data-role="listview" id="user-list"></ul>
 
             <div data-role="footer" data-position="fixed">
-                <h1>Home</h1>
+                <h1>Todos os Direitos Resevados</h1>
             </div><!-- /footer -->
         </div> <!-- home page -->
 
         <!-- page 1 -->
-        <div data-role="page" id="page1">
+        <div data-role="page" id="page">
             <div data-role="header">
                 <a href="#" data-icon="back" data-rel="back" title="Go back">Back</a>
-                <h1>Page1</h1>
+                <h1>Conversando com Dupla: {user}</h1>  
             </div>
 
             <div class="ui-content">
@@ -78,53 +67,10 @@
                 <button data-role="button" data-inline="true" data-iconpos="notext" data-icon="camera" id="get-photo"></button>
                 <button data-role="button" data-inline="true" data-iconpos="notext" data-icon="arrow-r" id="send-message"></button>
                 <button data-role="button" data-inline="true" data-iconpos="notext" data-icon="delete" id="delete-messages"></button>
-                <h1>Page1</h1>
+                <h1>Todos os Direitos Resevados</h1>
             </div><!-- /footer -->
         </div><!-- /page1 -->
 
-        <!-- page 2 -->
-        <div data-role="page" id="page2">
-            <div data-role="header">
-                 <a href="#" data-icon="back" data-rel="back" title="Go back">Back</a>
-                <h1>Page2</h1>
-            </div>
-
-            <div class="ui-content">
-                <ul data-role="list-view" id="messages">
-                    <li>No messages</li>
-                </ul>
-            </div><!-- end page 2 content -->
-
-            <div data-role="footer" data-position="fixed"><!--
-                <textarea id="message" placeholder="Write your message here"></textarea>
-                <button data-role="button" data-inline="true" data-iconpos="notext" data-icon="camera" id="get-photo"></button>
-                <button data-role="button" data-inline="true" data-iconpos="notext" data-icon="arrow-r" id="send-message"></button>
-                <button data-role="button" data-inline="true" data-iconpos="notext" data-icon="delete" id="delete-messages"></button> -->
-                <h1>Page2</h1>
-            </div><!-- /footer -->
-        </div><!-- /page2 -->
-
-        <!-- page 3 -->
-        <div data-role="page" id="page3">
-            <div data-role="header">
-            <a href="#" data-icon="back" data-rel="back" title="Go back">Back</a>
-                <h1>Page3</h1>
-            </div>
-
-            <div class="ui-content">
-                <ul data-role="list-view" id="messages">
-                    <li>No messages</li>
-                </ul>
-            </div><!-- end page 3 content -->
-
-            <div data-role="footer" data-position="fixed"><!--
-                <textarea id="message" placeholder="Write your message here"></textarea>
-                <button data-role="button" data-inline="true" data-iconpos="notext" data-icon="camera" id="get-photo"></button>
-                <button data-role="button" data-inline="true" data-iconpos="notext" data-icon="arrow-r" id="send-message"></button>
-                <button data-role="button" data-inline="true" data-iconpos="notext" data-icon="delete" id="delete-messages"></button> -->
-                <h1>Page3</h1>
-            </div><!-- /footer -->
-        </div><!-- /page3 -->
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/jquery-1.11.1.min.js" id="cordova-jquery"></script>
         <script type="text/javascript" src="js/index.js"></script>

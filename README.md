@@ -1,9 +1,15 @@
 # HibridLocalStorageApp
 
-Install
+Installing Cordova
 -------
 
 > npm install -g cordova
+
+Installing Plugins
+-------
+
+Inside www folder run:
+> cordova plugin add <plugin-name>
 
 Run
 -------
