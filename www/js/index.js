@@ -19,7 +19,7 @@ var communicator = (function () {
         if (msg.type === 'image64') {
             $messages.append(getMessageImgHTML(msg));
         }
-        if (msg.type === 'text') {  
+        if (msg.type === 'text') {
             $messages.append(getMessageTextHTML(msg));
         }
         $messages.listview("refresh");
@@ -33,7 +33,7 @@ var communicator = (function () {
         }
         $messages.html('');
         savedMessages.forEach(function (msg) {
-            appendMessage(msg); 
+            appendMessage(msg);
         });
     }
 
@@ -53,7 +53,7 @@ var communicator = (function () {
     function onSendMessage() {
         var message = {
             type: 'text',
-            value: $messageField.val(), 
+            value: $messageField.val(),
             to:destination
         }
         addMessage(message);
@@ -94,7 +94,7 @@ var communicator = (function () {
     }
 
     function initListeners(user) {
-        
+
         $('#send-message').on('tap', onSendMessage);
         $('#delete-messages').on('tap', onDeleteMessages);
         $('#get-photo').on('taphold', onGetPhoto);
@@ -203,7 +203,7 @@ var userListPage = (function(){
         newUser+='</li>';
             $parent.append(newUser);
         });
-        $parent.listview("refresh");
+        $parent.listview().listview("refresh");
         $(document).on('tap','.conversations',pageChangeTap);
         $(document).on('pagebeforechange', onPageBeforeChange);
     }
@@ -221,7 +221,7 @@ var userListPage = (function(){
     return{
         mkey:'a',
         init:function(){
-            getUserList();          
+            getUserList();
         }
     }
 })();
