@@ -21,7 +21,7 @@ var communicator = (function () {
         if (msg.type === 'text') {
             $messages.append(getMessageTextHTML(msg));
         }
-        $messages.listview("refresh"); 
+        $messages.listview("refresh");
     }
 
     // deprecated
@@ -32,14 +32,14 @@ var communicator = (function () {
         }
         $messages.html('');
         savedMessages.forEach(function (msg) {
-            appendMessage(msg);       
+            appendMessage(msg);
         });
     }
 
     function addMessage(msg) {
         if (savedMessages.length === 0) {
             // clear "no messages" message
-            $messages.html(''); 
+            $messages.html('');
         }
         savedMessages.push(msg);
         $messageField.val('');
@@ -57,7 +57,7 @@ var communicator = (function () {
         addMessage(message);
         // console.log('Envie Mensagem');
     }
-    
+
 
     function onGetPhoto() {
         // console.log('tap');
@@ -70,7 +70,7 @@ var communicator = (function () {
 
     function onGetPhotoSuccess(imageData) {
         var message = {
-            value: imageData, 
+            value: imageData,
             type:'image64'
         }
         addMessage(message);
@@ -83,7 +83,7 @@ var communicator = (function () {
     function onDeleteMessages() {
         window.localStorage.clear();
         savedMessages = [];
-        $messages.html('<li>no messages</li>'); 
+        $messages.html('<li>no messages</li>');
         $messages.listview("refresh");
         // console.log('Deleta Mensagens');
     }
@@ -100,11 +100,68 @@ var communicator = (function () {
 
 })();
 
+// simple chat app
+var accelerometer = (function () {
+    var watchID;
+
+    var transforms = [
+        '-webkit-transform',
+        '-moz-transform',
+        '-ms-transform',
+        'transform'
+    ]
+
+    var accelerometerOptions = {
+        frequency: 2000
+    }
+
+    function accelerometerSuccess(data) {
+        var rotate = {};
+
+        console.log('rotate!', data);
+        transforms.forEach(function (attr) {
+            var rotateX = 'rotateX(' + (data.x * 100) + 'deg)';
+            var rotateY = 'rotateY(' + (data.y * 100) + 'deg)';
+            var rotateZ = 'rotateZ(' + (data.z * 100) + 'deg)';
+
+            rotate[attr] = rotateX + rotateY + rotateZ;
+        });
+
+        $('#box-phone-d1').css(rotate);
+
+        // navigator.accelerometer.clearWatch(watchID);
+    };
+
+    function accelerometerError() {
+        console.log('error');
+    };
+
+    function accelerationWatch() {
+        watchID = navigator.accelerometer.watchAcceleration(
+            accelerometerSuccess,
+            accelerometerError,
+            accelerometerOptions
+        );
+    }
+
+    function init() {
+        console.log('init accelerometer');
+        accelerationWatch();
+    }
+
+    return {
+        init: init
+    };
+
+})();
+
+
  $(document).on("mobileinit", function () {
     $.mobile.defaultPageTransition = "none";
     $.mobile.defaultDialogTransition = "none";
 
     communicator.init();
+    accelerometer.init();
 });
 
 // function onTakePhoto() {
