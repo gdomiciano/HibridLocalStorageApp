@@ -57,6 +57,7 @@ var communicator = (function () {
         addMessage(message);
         // console.log('Envie Mensagem');
     }
+    
 
     function onGetPhoto() {
         // console.log('tap');
