@@ -276,9 +276,7 @@ ChatApp.userListPage = (function () {
 
     return {
         'mkey': 'a',
-        'init': function () {
-            getUserList();
-        }
+        'init': getUserList
     };
 
 })(); // userListPage
