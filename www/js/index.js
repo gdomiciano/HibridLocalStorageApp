@@ -262,9 +262,6 @@ ChatApp.userListPage = (function () {
         $parent.append(usersHtml);
 
         $parent.listview().listview('refresh');
-
-        $(document).on('tap', '.conversations', pageChangeTap);
-        $(document).on('pagebeforechange', onPageBeforeChange);
     }
 
     function getUserList() {
@@ -277,9 +274,20 @@ ChatApp.userListPage = (function () {
         });
     }
 
+    function initListeners() {
+        $(document).on('tap', '.conversations', pageChangeTap);
+        $(document).on('pagebeforechange', onPageBeforeChange);
+    }
+
+
+    function init() {
+        initListeners();
+        getUserList();
+    }
+
     return {
         'mkey': 'a',
-        'init': getUserList
+        'init': init
     };
 
 })(); // userListPage
