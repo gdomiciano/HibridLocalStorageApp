@@ -158,19 +158,20 @@ ChatApp.communicator = (function () {
         $('#get-photo').on('taphold', onGetPhoto);
     }
 
+    function getMesageFromSocket(msg) {
+        console.log('msg', msg);
+        savedMessages.push(msg);
+        window.localStorage.setItem('messages',
+            JSON.stringify(savedMessages)
+        );
+        $messages.append(getMessageTextHTML(msg));
+        $messages.listview('refresh');
+    }
+
     return {
         'init': initListeners,
-        'getMesageFromSocket': function (msg) {
-            console.log('msg', msg);
-            savedMessages.push(msg);
-            window.localStorage.setItem('messages',
-                JSON.stringify(savedMessages)
-            );
-            $messages.append(getMessageTextHTML(msg));
-            $messages.listview('refresh');
-        }
+        'getMesageFromSocket': getMesageFromSocket
     };
-
 })(); // communicator
 
 ChatApp.socketClient = (function () {
