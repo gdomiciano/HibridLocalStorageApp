@@ -176,7 +176,7 @@ ChatApp.communicator = (function () {
 })(); // communicator
 
 ChatApp.socketClient = (function () {
-    var connected = false;
+    var isConnected = false;
     var socket = null;
 
     function onSocketError(error) {
@@ -184,8 +184,8 @@ ChatApp.socketClient = (function () {
     }
 
     function onSocketOpen(event) {
-        console.log('connected', event);
-        connected = true;
+        console.log('isConnected', event);
+        isConnected = true;
     }
 
     function onSocketMessage(event) {
@@ -199,12 +199,15 @@ ChatApp.socketClient = (function () {
     }
 
     function sendMessage(message) {
-        if (socket && connected) {
+        if (socket && isConnected) {
             socket.send(message);
         }
     }
 
     function init() {
+        if (socket && isConnected) {
+            return;
+        }
         socket = new WebSocket('ws://127.0.0.1:1337');
         socket.onmessage = onSocketMessage;
         socket.onerror = onSocketError;
@@ -278,7 +281,6 @@ ChatApp.userListPage = (function () {
         $(document).on('tap', '.conversations', pageChangeTap);
         $(document).on('pagebeforechange', onPageBeforeChange);
     }
-
 
     function init() {
         initListeners();
