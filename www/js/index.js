@@ -172,6 +172,7 @@ ChatApp.communicator = (function () {
         'init': initListeners,
         'getMesageFromSocket': getMesageFromSocket
     };
+
 })(); // communicator
 
 ChatApp.socketClient = (function () {
@@ -241,26 +242,27 @@ ChatApp.userListPage = (function () {
 
     function onGetUserListSuccess(data) {
         var $parent = $('#user-list');
-        var newUserHTML = '';
+        var usersHtml = '';
 
         data.forEach(function (user) {
-            newUserHTML += '<li>';
-            newUserHTML += '<a class="conversations" ';
-            newUserHTML += '  data-user="' + user.user + '" ';
-            newUserHTML += '  href="#page' + (user.user).replace('d', '') + '"';
-            newUserHTML += '>';
-            newUserHTML += '<div class="square">';
-            newUserHTML += '<img src="img/phone.png" alt="" ';
-            newUserHTML += '  id="box-phone-' + user.user + '"';
-            newUserHTML += '>';
-            newUserHTML += '</div>';
-            newUserHTML += 'Dupla ' + user.user;
-            newUserHTML += '</a>';
-            newUserHTML += '</li>';
-            $parent.append(newUserHTML);
+            usersHtml += '<li>';
+            usersHtml += '<a class="conversations" ';
+            usersHtml += '  data-user="' + user.user + '" ';
+            usersHtml += '  href="#page' + (user.user).replace('d', '') + '"';
+            usersHtml += '>';
+            usersHtml += '<div class="square">';
+            usersHtml += '<img src="img/phone.png" alt="" ';
+            usersHtml += '  id="box-phone-' + user.user + '"';
+            usersHtml += '>';
+            usersHtml += '</div>';
+            usersHtml += 'Dupla ' + user.user;
+            usersHtml += '</a>';
+            usersHtml += '</li>';
         });
+        $parent.append(usersHtml);
 
         $parent.listview().listview('refresh');
+
         $(document).on('tap', '.conversations', pageChangeTap);
         $(document).on('pagebeforechange', onPageBeforeChange);
     }
