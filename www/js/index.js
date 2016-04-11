@@ -233,6 +233,7 @@ ChatApp.userListPage = (function () {
             ChatApp.communicator.init(user);
             ChatApp.socketClient.init();
         }
+        $('#receiver').html(user);
     }
 
     function pageChangeTap() {
