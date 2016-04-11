@@ -88,7 +88,7 @@ ChatApp.communicator = (function () {
         $messages.listview('refresh');
     }
 
-    function receiveMessage(msg) {
+    function receiveMessage(event, msg) {
         console.log('receiveMessage', msg);
         addLocalMessage(msg);
 
@@ -104,8 +104,10 @@ ChatApp.communicator = (function () {
 
     function startChat() {
         console.log('startChat', receiver);
-        savedMessages = JSON.parse(localStorage.getItem('messages'));
-        receiverMessages = savedMessages.filter(isReceiver);
+        savedMessages = JSON.parse(localStorage.getItem('messages')) || [];
+        if (savedMessages.length > 0) {
+            receiverMessages = savedMessages.filter(isReceiver);
+        }
         console.log('receiverMessages', receiverMessages);
 
         if (receiverMessages.length === 0) {
@@ -120,10 +122,12 @@ ChatApp.communicator = (function () {
     }
 
     function onPageBeforeChange(e, data) {
-        receiver = data.options.receiver;
-
         console.log('onPageBeforeChange');
         console.log('data.toPage', data.toPage);
+
+        if (data.options.receiver) {
+            receiver = data.options.receiver;
+        }
 
         if (data.toPage === '#page') {
             // navigation is about to commence
@@ -141,6 +145,7 @@ ChatApp.communicator = (function () {
         $('#get-photo').on('taphold', getPhotoFromLibrary);
 
         $(document).on('pagebeforechange', onPageBeforeChange);
+        $(document).on('message.ChatApp', receiveMessage);
     }
 
     return {
@@ -167,7 +172,7 @@ ChatApp.socketClient = (function () {
     function onSocketMessage(event) {
         var message = JSON.parse(event.data);
         console.log('onSocketMessage', message);
-        ChatApp.communicator.receiveMessage(message);
+        $(document).trigger('message.ChatApp', message);
     }
 
     function onSocketClose() {
