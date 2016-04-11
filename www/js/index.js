@@ -147,7 +147,6 @@ ChatApp.communicator = (function () {
         console.log('getMesageFromSocket', msg);
         showMessage(msg);
         addLocalMessage(msg);
-        $messages.listview('refresh');
     }
 
     return {
