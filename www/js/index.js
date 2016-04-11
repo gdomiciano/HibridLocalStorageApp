@@ -72,8 +72,13 @@ ChatApp.communicator = (function () {
         return '<li><img src="' + src + '"/></li>';
     }
 
-    function appendMessage(msg) {
-        console.log('appendMessage', msg);
+    function showMessage(msg) {
+        console.log('showMessage', msg);
+        if (savedMessages.length === 0) {
+            // clear "no messages" message
+            $messages.html('');
+        }
+
         if (msg.type === 'image64') {
             $messages.append(getMessageImgHTML(msg));
         }
@@ -83,29 +88,10 @@ ChatApp.communicator = (function () {
         $messages.listview('refresh');
     }
 
-    // @deprecated
-    // function renderMessages() {
-    //     if(savedMessages === []) {
-    //         $messages.html('<li>no messages</li>');
-    //         return;
-    //     }
-    //     $messages.html('');
-    //     savedMessages.forEach(function (msg) {
-    //         appendMessage(msg);
-    //     });
-    // }
-
     function addLocalMessage(msg) {
         console.log('addLocalMessage', msg);
-        if (savedMessages.length === 0) {
-            // clear "no messages" message
-            $messages.html('');
-        }
         savedMessages.push(msg);
         window.localStorage.setItem('messages', JSON.stringify(savedMessages));
-
-        // renderMessages();
-        // appendMessage(msg); // leave to the socket
     }
 
     function onSendMessage() {
@@ -159,13 +145,8 @@ ChatApp.communicator = (function () {
 
     function getMesageFromSocket(msg) {
         console.log('getMesageFromSocket', msg);
-        if (savedMessages.length === 0) {
-            // clear "no messages" message
-            $messages.html('');
-        }
-
+        showMessage(msg);
         addLocalMessage(msg);
-        appendMessage(msg);
         $messages.listview('refresh');
     }
 
