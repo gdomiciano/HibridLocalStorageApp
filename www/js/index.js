@@ -73,6 +73,7 @@ ChatApp.communicator = (function () {
     }
 
     function appendMessage(msg) {
+        console.log('appendMessage', msg);
         if (msg.type === 'image64') {
             $messages.append(getMessageImgHTML(msg));
         }
@@ -94,7 +95,8 @@ ChatApp.communicator = (function () {
     //     });
     // }
 
-    function addMessage(msg) {
+    function addLocalMessage(msg) {
+        console.log('addLocalMessage', msg);
         if (savedMessages.length === 0) {
             // clear "no messages" message
             $messages.html('');
@@ -104,7 +106,7 @@ ChatApp.communicator = (function () {
         window.localStorage.setItem('messages', JSON.stringify(savedMessages));
 
         // renderMessages();
-        appendMessage(msg);
+        // appendMessage(msg); // leave to the socket
     }
 
     function onSendMessage() {
@@ -114,9 +116,6 @@ ChatApp.communicator = (function () {
             'to': destination
         };
 
-        addMessage(message);
-        // console.log('Envie Mensagem');
-
         ChatApp.socketClient.sendMessage(JSON.stringify(message));
     }
 
@@ -125,7 +124,7 @@ ChatApp.communicator = (function () {
             'value': imageData,
             'type': 'image64'
         };
-        addMessage(message);
+        addLocalMessage(message);
     }
 
     function onGetPhotoError(error) {
@@ -159,12 +158,14 @@ ChatApp.communicator = (function () {
     }
 
     function getMesageFromSocket(msg) {
-        console.log('msg', msg);
-        savedMessages.push(msg);
-        window.localStorage.setItem('messages',
-            JSON.stringify(savedMessages)
-        );
-        $messages.append(getMessageTextHTML(msg));
+        console.log('getMesageFromSocket', msg);
+        if (savedMessages.length === 0) {
+            // clear "no messages" message
+            $messages.html('');
+        }
+
+        addLocalMessage(msg);
+        appendMessage(msg);
         $messages.listview('refresh');
     }
 
@@ -190,8 +191,8 @@ ChatApp.socketClient = (function () {
 
     function onSocketMessage(event) {
         var message = JSON.parse(event.data);
+        console.log('onSocketMessage', message);
         ChatApp.communicator.getMesageFromSocket(message);
-        console.log(message);
     }
 
     function onSocketClose() {
@@ -231,10 +232,12 @@ ChatApp.userListPage = (function () {
         console.log('onPageBeforeChange');
         console.log('data.toPage', data.toPage);
         if (data.toPage === '#page') {
+            // navigation is about to commence
             console.log('change user', user);
             ChatApp.communicator.init(user);
             ChatApp.socketClient.init();
         } else {
+            // the destination page has been loaded and navigation will continue
             $('#receiver').html(user);
         }
     }
