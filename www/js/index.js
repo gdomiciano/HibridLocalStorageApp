@@ -27,10 +27,7 @@ ChatApp.accelerometer = (function () {
 
             rotate[attr] = rotateX + rotateY + rotateZ;
         });
-        // getUserList()
         $('#box-phone-d1').css(rotate);
-
-        // navigator.accelerometer.clearWatch(watchID);
     }
 
     function accelerometerError() {
@@ -45,13 +42,13 @@ ChatApp.accelerometer = (function () {
         );
     }
 
-    function init() {
+    function initAccelerometer() {
         console.log('init accelerometer');
         accelerationWatch();
     }
 
     return {
-        'init': init
+        'init': initAccelerometer
     };
 
 })(); // accelerometer
@@ -61,7 +58,7 @@ ChatApp.communicator = (function () {
     var savedMessages = [];
     var $messageField = $('#message');
     var $messages = $('#messages');
-    var destination = '';
+    var receiver = '';
 
     function getMessageTextHTML(msg) {
         return '<li>' + msg.value + '</li>';
@@ -94,11 +91,11 @@ ChatApp.communicator = (function () {
         window.localStorage.setItem('messages', JSON.stringify(savedMessages));
     }
 
-    function onSendMessage() {
+    function sendTextMessage() {
         var message = {
             'type': 'text',
             'value': $messageField.val(),
-            'to': destination
+            'to': receiver
         };
         $messageField.val('');
 
@@ -117,8 +114,7 @@ ChatApp.communicator = (function () {
         console.log('error: ', error);
     }
 
-    function onGetPhoto() {
-        // console.log('tap');
+    function getPhotoFromLibrary() {
         var options = {
             'sourceType': Camera.PictureSourceType.PHOTOLIBRARY,
             'destinationType': Camera.DestinationType.DATA_URL
@@ -129,29 +125,28 @@ ChatApp.communicator = (function () {
         );
     }
 
-    function onDeleteMessages() {
+    function deleteMessages() {
         window.localStorage.clear();
         savedMessages = [];
         $messages.html('<li>no messages</li>');
         $messages.listview('refresh');
-        // console.log('Deleta Mensagens');
     }
 
-    function initListeners() {
-        $('#send-message').on('tap', onSendMessage);
-        $('#delete-messages').on('tap', onDeleteMessages);
-        $('#get-photo').on('taphold', onGetPhoto);
+    function initCommunicator() {
+        $('#send-message').on('tap', sendTextMessage);
+        $('#delete-messages').on('tap', deleteMessages);
+        $('#get-photo').on('taphold', getPhotoFromLibrary);
     }
 
-    function getMesageFromSocket(msg) {
-        console.log('getMesageFromSocket', msg);
+    function receiveMessage(msg) {
+        console.log('receiveMessage', msg);
         showMessage(msg);
         addLocalMessage(msg);
     }
 
     return {
-        'init': initListeners,
-        'getMesageFromSocket': getMesageFromSocket
+        'init': initCommunicator,
+        'receiveMessage': receiveMessage
     };
 
 })(); // communicator
@@ -172,7 +167,7 @@ ChatApp.socketClient = (function () {
     function onSocketMessage(event) {
         var message = JSON.parse(event.data);
         console.log('onSocketMessage', message);
-        ChatApp.communicator.getMesageFromSocket(message);
+        ChatApp.communicator.receiveMessage(message);
     }
 
     function onSocketClose() {
@@ -185,7 +180,7 @@ ChatApp.socketClient = (function () {
         }
     }
 
-    function init() {
+    function initSocketClient() {
         if (socket && isConnected) {
             return;
         }
@@ -197,41 +192,46 @@ ChatApp.socketClient = (function () {
     }
 
     return {
-        'init': init,
+        'init': initSocketClient,
         'sendMessage': sendMessage
     };
 
 })(); // socketClient
 
-ChatApp.userListPage = (function () {
+ChatApp.usersListPage = (function () {
     var url = 'http://www.mocky.io/v2/56f0a2ef1000007f018ef257';
-    console.log('socketClient', ChatApp.socketClient);
+
+    function initChat(receiver) {
+        ChatApp.communicator.init(receiver);
+        ChatApp.socketClient.init();
+    }
 
     function onPageBeforeChange(e, data) {
-        var user = data.options.user;
+        var receiver = data.options.receiver;
+
         console.log('onPageBeforeChange');
         console.log('data.toPage', data.toPage);
+
         if (data.toPage === '#page') {
             // navigation is about to commence
-            console.log('change user', user);
-            ChatApp.communicator.init(user);
-            ChatApp.socketClient.init();
+            console.log('talk to', receiver);
+            initChat(receiver);
         } else {
             // the destination page has been loaded and navigation will continue
-            $('#receiver').html(user);
+            $('#receiver').html(receiver);
         }
     }
 
-    function pageChangeTap() {
-        console.log('evento change');
+    function goToChatPage() {
+        console.log('goToChatPage');
         $.mobile.pageContainer.pagecontainer('change', '#page', {
-            'user': $(this).attr('data-user'),
+            'receiver': $(this).attr('data-user'),
             'transition': 'flip'
         });
     }
 
-    function onGetUserListSuccess(data) {
-        var $parent = $('#user-list');
+    function buildUsersList(data) {
+        var $usersList = $('#user-list');
         var usersHtml = '';
 
         data.forEach(function (user) {
@@ -249,9 +249,9 @@ ChatApp.userListPage = (function () {
             usersHtml += '</a>';
             usersHtml += '</li>';
         });
-        $parent.append(usersHtml);
+        $usersList.append(usersHtml);
 
-        $parent.listview().listview('refresh');
+        $usersList.listview().listview('refresh');
     }
 
     function getUserList() {
@@ -260,32 +260,32 @@ ChatApp.userListPage = (function () {
             'jsonpCallback': 'jsonCallback',
             'contentType': 'application/json',
             'url': url,
-            'success': onGetUserListSuccess
+            'success': buildUsersList
         });
     }
 
     function initListeners() {
-        $(document).on('tap', '.conversations', pageChangeTap);
+        $(document).on('tap', '.conversations', goToChatPage);
         $(document).on('pagebeforechange', onPageBeforeChange);
     }
 
-    function init() {
+    function initUsersListPage() {
         initListeners();
         getUserList();
     }
 
     return {
         'mkey': 'a',
-        'init': init
+        'init': initUsersListPage
     };
 
-})(); // userListPage
+})(); // usersListPage
 
 $(document).on('mobileinit', function () {
     $.mobile.defaultPageTransition = 'none';
     $.mobile.defaultDialogTransition = 'none';
 
-    ChatApp.userListPage.init();
+    ChatApp.usersListPage.init();
 });
 
 document.addEventListener('deviceready', function onDeviceReady() {
