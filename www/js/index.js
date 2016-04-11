@@ -228,12 +228,15 @@ ChatApp.userListPage = (function () {
 
     function onPageBeforeChange(e, data) {
         var user = data.options.user;
+        console.log('onPageBeforeChange');
+        console.log('data.toPage', data.toPage);
         if (data.toPage === '#page') {
             console.log('change user', user);
             ChatApp.communicator.init(user);
             ChatApp.socketClient.init();
+        } else {
+            $('#receiver').html(user);
         }
-        $('#receiver').html(user);
     }
 
     function pageChangeTap() {
