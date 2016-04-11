@@ -102,7 +102,6 @@ ChatApp.communicator = (function () {
             $messages.html('');
         }
         savedMessages.push(msg);
-        $messageField.val('');
         window.localStorage.setItem('messages', JSON.stringify(savedMessages));
 
         // renderMessages();
@@ -115,6 +114,7 @@ ChatApp.communicator = (function () {
             'value': $messageField.val(),
             'to': destination
         };
+        $messageField.val('');
 
         ChatApp.socketClient.sendMessage(JSON.stringify(message));
     }
