@@ -11,7 +11,6 @@ Installing Cordova
 Installing Plugins
 -------
 
-Inside www folder run:
 > cordova plugin add cordova-plugin-camera cordova-plugin-accelerometer cordova-plugin-device-motion 
 > cordova plugin add cordova-plugin-browsersync
 
@@ -19,3 +18,12 @@ Run
 -------
 
 > cordova run -- --live-reload
+
+Install and run websocket
+-------
+
+> cd wsserver
+
+> npm install
+
+> node ws.js
