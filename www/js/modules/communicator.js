@@ -6,14 +6,30 @@
     var $messages = $('#messages');
     var receiver = '';
     var receiverMessages = [];
+    var sender = '';
+
+    function setUserName(){
+        var $uname =  $('#set-name #name');
+        sender = $uname.val();
+        if(sender !== ''){
+            $uname.parent().removeClass('error');
+            $('#set-name').hide();
+            console.log('hide');
+
+        }else{
+            $uname.parent().addClass('error');
+            console.log('error');
+
+        }
+    }
 
     function getMessageTextHTML(msg) {
-        return '<li>' + msg.value + '</li>';
+        return '<li><small>'+msg.from+ ' escreveu:</small>' + msg.value + '</li>';
     }
 
     function getMessageImgHTML(msg) {
         var src = 'data:image/jpeg;base64,' + msg.value;
-        return '<li><img src="' + src + '"/></li>';
+        return '<li><small>'+msg.from+ ' enviou:</small><img src="' + src + '"/></li>';
     }
 
     function showMessage(msg) {
@@ -48,7 +64,7 @@
             'type': 'text',
             'value': $messageField.val(),
             'to': receiver,
-            'from': ''
+            'from': sender
         };
         $messageField.val('');
 
@@ -142,6 +158,7 @@
         $('#send-message').on('tap', sendTextMessage);
         $('#delete-messages').on('tap', deleteMessages);
         $('#get-photo').on('taphold', getPhotoFromLibrary);
+        $(document).on('click', '#set-name>.ui-btn ', setUserName);
 
         $(document).on('pagebeforechange', onPageBeforeChange);
         $(document).on('message.ChatApp', receiveMessage);

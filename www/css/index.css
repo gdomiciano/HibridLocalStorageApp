@@ -135,3 +135,27 @@ h1 {
     transform-style: preserve-3d;
     margin: 0 5px;
 }
+#set-name{
+    overflow: hidden;
+}
+#set-name .ui-input-text,
+#set-name .ui-input-text #name,
+.ui-input-text input, 
+.ui-input-search input {
+    width: 68%;
+    float :left;
+}
+#set-name .ui-btn,
+#set-name .ui-btn #get-in{
+    width: 18%;
+    display: inline;
+    float: right;
+}
+.error{
+    border:red;
+}
+small{
+    font-weight: bold;
+    display: block;
+    font-size: 9px;
+}
